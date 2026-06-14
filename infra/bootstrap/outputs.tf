@@ -1,6 +1,6 @@
 # These values feed the main infra/ Terraform backend config (via
 # -backend-config flags) and the GitHub Actions secrets used by
-# .github/workflows/deploy.yml - see infra/README.md.
+# .github/workflows/ci-cd.yml - see infra/README.md.
 
 output "state_bucket_name" {
   description = "S3 bucket holding Terraform remote state for infra/."

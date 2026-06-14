@@ -73,12 +73,11 @@ resource "aws_dynamodb_table" "terraform_lock" {
 
 # --- GitHub Actions OIDC ----------------------------------------------------
 
-# GitHub's OIDC token signing certificate thumbprints. AWS validates the
-# provider's TLS certificate chain against these on each token exchange.
-resource "aws_iam_openid_connect_provider" "github_actions" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1", "1c58a3a8518e8759bf075b76b750d4f2df264fcd"]
+# The OIDC provider for token.actions.githubusercontent.com is account-wide
+# (AWS allows only one per URL per account) and was already created by the
+# ifrs9-ecl-calculator bootstrap, so it's looked up here rather than created.
+data "aws_iam_openid_connect_provider" "github_actions" {
+  url = "https://token.actions.githubusercontent.com"
 }
 
 data "aws_iam_policy_document" "github_actions_assume_role" {
@@ -88,7 +87,7 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github_actions.arn]
+      identifiers = [data.aws_iam_openid_connect_provider.github_actions.arn]
     }
 
     condition {
